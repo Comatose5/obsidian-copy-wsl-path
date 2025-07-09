@@ -19,5 +19,11 @@ export class CopyPathPluginSettingsTab extends PluginSettingsTabBase<CopyPathPlu
       .addToggle((toggle) => {
         this.bind(toggle, 'copyFullPathContextItem');
       });
+
+    new SettingEx(this.containerEl)
+      .setName('"Copy WSL path" context menu action')
+      .addToggle((toggle) => {
+        this.bind(toggle, 'copyWSLPathContextItem');
+      });
   }
 }

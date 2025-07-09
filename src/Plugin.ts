@@ -45,6 +45,18 @@ export class CopyPathPlugin extends PluginBase<CopyPathPluginTypes> {
               });
           });
         }
+
+        if (this.settings.copyWSLPathContextItem) {
+          menu.addItem((item) => {
+            item
+              .setSection('info')
+              .setTitle('Copy WSL path')
+              .setIcon('copy')
+              .onClick(async () => {
+                await copyWSLPath(file, this);
+              });
+          });
+        }
       })
     );
   }
@@ -66,4 +78,31 @@ async function copyVaultPath(file: TAbstractFile): Promise<void> {
   await navigator.clipboard.writeText(vaultPath);
   // eslint-disable-next-line no-magic-numbers
   new Notice(`Copied vault path:\n${vaultPath}`, 2000);
+}
+
+function convertWindowsPathToWSL(windowsPath: string): string {
+  // Convert Windows path to WSL mount format
+  // C:\path\to\file -> /mnt/c/path/to/file
+  const normalized = windowsPath.replace(/\\/g, '/');
+  const driveMatch = normalized.match(/^([A-Za-z]):/);
+  
+  if (driveMatch) {
+    const driveLetter = driveMatch[1].toLowerCase();
+    const pathWithoutDrive = normalized.substring(2);
+    return `/mnt/${driveLetter}${pathWithoutDrive}`;
+  }
+  
+  // If no drive letter found, return as-is with forward slashes
+  return normalized;
+}
+
+async function copyWSLPath(
+  file: TAbstractFile,
+  plugin: CopyPathPlugin
+): Promise<void> {
+  const absolutePath = plugin.app.vault.adapter.getFullRealPath(file.path);
+  const wslPath = convertWindowsPathToWSL(absolutePath);
+  await navigator.clipboard.writeText(wslPath);
+  // eslint-disable-next-line no-magic-numbers
+  new Notice(`Copied WSL path:\n${wslPath}`, 2000);
 }

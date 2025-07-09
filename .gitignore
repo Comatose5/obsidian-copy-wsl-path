@@ -24,3 +24,7 @@ data.json
 dist
 .env
 /tsconfig.tsbuildinfo
+
+# Claude Code
+.claude/
+CLAUDE.md
