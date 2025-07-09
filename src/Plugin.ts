@@ -86,7 +86,7 @@ function convertWindowsPathToWSL(windowsPath: string): string {
   const normalized = windowsPath.replace(/\\/g, '/');
   const driveMatch = normalized.match(/^([A-Za-z]):/);
   
-  if (driveMatch) {
+  if (driveMatch && driveMatch[1]) {
     const driveLetter = driveMatch[1].toLowerCase();
     const pathWithoutDrive = normalized.substring(2);
     return `/mnt/${driveLetter}${pathWithoutDrive}`;
